@@ -1,0 +1,4 @@
+{
+	"extends": ["@mjljm/configs-manager/tsconfig.library.json"],
+	"include": ["src", ".*", "*"]
+}

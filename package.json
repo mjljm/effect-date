@@ -1,0 +1,73 @@
+{
+	"name": "@mjljm-dev/effect-date",
+	"type": "module",
+	"sideEffects": [],
+	"packageManager": "pnpm@9.4.0",
+	"author": "Jérôme MARTIN",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mjljm/effect-date"
+	},
+	"bugs": {
+		"url": "https://github.com/mjljm/effect-date/issues"
+	},
+	"homepage": "https://github.com/mjljm/effect-date",
+	"scripts": {
+		"circular": "madge --extensions ts --circular --no-color --no-spinner src",
+		"lint-fix": "pnpm lint --fix",
+		"test": "vitest",
+		"examples": "pnpx vite-node example/example1.ts",
+		"distify": "distify-package-json",
+		"check": "tsc -b tsconfig.json",
+		"lint": "eslint",
+		"lint-rules": "pnpx @eslint/config-inspector",
+		"clean-pnpm-cache": "shx rm -rf node_modules",
+		"update-config-files": "update-config-files"
+	},
+	"exports": {
+		"./public/*": {
+			"require": "./public/*"
+		},
+		".": {
+			"import": "./src/index.ts"
+		}
+	},
+	"imports": {
+		"#src/index": {
+			"import": null
+		},
+		"#src/*": {
+			"import": "./src/*.ts"
+		},
+		"#mjljm/js-lib": "@mjljm-dev/js-lib",
+		"#mjljm/effect-lib": "@mjljm-dev/effect-lib",
+		"#mjljm/effect-pretty-print": "@mjljm-dev/effect-pretty-print",
+		"#mjljm/effect-report": "@mjljm-dev/effect-report",
+		"#mjljm/effect-date": "@mjljm-dev/effect-date",
+		"#mjljm/node-effect-lib": "@mjljm-dev/node-effect-lib"
+	},
+	"files": [
+		"/src/"
+	],
+	"tags": [
+		"effect",
+		"typescript",
+		"algebraic-data-types",
+		"functional-programming"
+	],
+	"keywords": [
+		"effect",
+		"typescript",
+		"algebraic-data-types",
+		"functional-programming"
+	],
+	"version": "1.0.0",
+	"description": "A complement to the official effect library dedicated to date and time",
+	"peerDependencies": {
+		"@mjljm-dev/effect-lib": "workspace:*",
+		"@mjljm-dev/effect-templater": "workspace:*",
+		"@mjljm-dev/js-lib": "workspace:*",
+		"effect": "3.3.5"
+	}
+}
