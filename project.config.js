@@ -1,29 +1,28 @@
 import * as ConfigManager from '@mjljm/configs-manager';
+import merge from 'deepmerge';
 
 const packageName = 'effect-date';
-const packageJson = {
-	...ConfigManager.PackageBase,
-	...ConfigManager.PackageSubRepo,
-	...ConfigManager.PackageEffectTags,
-	...ConfigManager.PackageSubRepoPublic,
-	name: ConfigManager.PackageBase.name(packageName),
-	version: '1.0.0',
-	repository: ConfigManager.PackageBase.repository(packageName),
-	bugs: ConfigManager.PackageBase.bugs(packageName),
-	homepage: ConfigManager.PackageBase.homepage(packageName),
-	description: 'A complement to the official effect library dedicated to date and time',
-	scripts: {
-		...ConfigManager.PackageSubRepo.scripts,
-		...ConfigManager.PackageBase.scripts,
-		...ConfigManager.PackageSubRepoPublic.scripts
-	},
-	peerDependencies: {
-		'@mjljm-dev/effect-lib': 'workspace:*',
-		'@mjljm-dev/effect-templater': 'workspace:*',
-		'@mjljm-dev/js-lib': 'workspace:*',
-		effect: ConfigManager.Versions.effectVersion
+const packageJson = merge.all([
+	ConfigManager.PackageBase,
+	ConfigManager.PackageSubRepo,
+	ConfigManager.PackageEffectTags,
+	ConfigManager.PackageSubRepoPublic,
+	{
+		name: ConfigManager.PackageBase.name(packageName),
+		version: '1.0.0',
+		repository: ConfigManager.PackageBase.repository(packageName),
+		bugs: ConfigManager.PackageBase.bugs(packageName),
+		homepage: ConfigManager.PackageBase.homepage(packageName),
+		description: 'A complement to the official effect library dedicated to date and time',
+		peerDependencies: {
+			'@mjljm-dev/effect-lib': 'workspace:*',
+			'@mjljm-dev/effect-templater': 'workspace:*',
+			'@mjljm-dev/js-lib': 'workspace:*',
+			effect: ConfigManager.Versions.effectVersion
+		}
 	}
-};
+]);
+
 export default {
 	// Put prettier in first position so the next generated files will get formatted
 	'prettier.config.js': ConfigManager.PrettierConfigTemplate,
