@@ -5,6 +5,7 @@ const packageJson = {
 	...ConfigManager.PackageBase,
 	...ConfigManager.PackageSubRepo,
 	...ConfigManager.PackageEffectTags,
+	...ConfigManager.PackageSubRepoPublic,
 	name: ConfigManager.PackageBase.name(packageName),
 	version: '1.0.0',
 	repository: ConfigManager.PackageBase.repository(packageName),
@@ -13,7 +14,8 @@ const packageJson = {
 	description: 'A complement to the official effect library dedicated to date and time',
 	scripts: {
 		...ConfigManager.PackageSubRepo.scripts,
-		...ConfigManager.PackageBase.scripts
+		...ConfigManager.PackageBase.scripts,
+		...ConfigManager.PackageSubRepoPublic.scripts
 	},
 	peerDependencies: {
 		'@mjljm-dev/effect-lib': 'workspace:*',
