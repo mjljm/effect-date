@@ -1,4 +1,4 @@
-import * as Errors from '#mjljm/effect-date/Errors';
+import * as Errors from '#parischap/effect-date/Errors';
 
 /*
  * Formats a date string according to the passed format. See Token.ts for the list and description of the tokens that can be used in the format param.

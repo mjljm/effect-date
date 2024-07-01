@@ -1,38 +1,34 @@
-import * as ConfigManager from '@mjljm/configs-manager';
+import * as ConfigManager from '@parischap/configs-manager';
 import merge from 'deepmerge';
+import { basename, resolve } from 'node:path/win32';
 
-const packageName = 'effect-date';
+const packageName = basename(resolve())
 const packageJson = merge.all([
-	ConfigManager.PackageBase,
-	ConfigManager.PackageSubRepo,
-	ConfigManager.PackageEffectTags,
-	ConfigManager.PackageSubRepoPublic,
+	ConfigManager.packageBase(packageName),
+	ConfigManager.packageSubRepo,
+	ConfigManager.packageEffectTags,
 	{
-		name: ConfigManager.PackageBase.name(packageName),
 		version: '1.0.0',
-		repository: ConfigManager.PackageBase.repository(packageName),
-		bugs: ConfigManager.PackageBase.bugs(packageName),
-		homepage: ConfigManager.PackageBase.homepage(packageName),
 		description: 'A complement to the official effect library dedicated to date and time',
 		peerDependencies: {
-			'@mjljm-dev/effect-lib': 'workspace:*',
-			'@mjljm-dev/effect-templater': 'workspace:*',
-			'@mjljm-dev/js-lib': 'workspace:*',
-			effect: ConfigManager.Versions.effectVersion
+			...ConfigManager.params.workspaceDevDep('js-lib'),
+			...ConfigManager.params.workspaceDevDep('effect-lib'),
+			...ConfigManager.params.workspaceDevDep('effect-templater'),
+			effect: ConfigManager.versions.effectVersion
 		}
 	}
 ]);
 
 export default {
 	// Put prettier in first position so the next generated files will get formatted
-	'prettier.config.js': ConfigManager.PrettierConfigTemplate,
-	'.gitignore': ConfigManager.GitIgnore,
-	'.prettierignore': ConfigManager.PrettierIgnore,
-	'tsconfig.src.json': ConfigManager.TsConfigSrcLibrary,
-	'tsconfig.others.json': ConfigManager.TsConfigOthers,
-	'tsconfig.json': ConfigManager.TsConfigAll,
-	'tsconfig.check.json': ConfigManager.TsConfigCheck,
-	'eslint.config.js': ConfigManager.EslintConfigLibraryTemplate,
-	'vite.config.ts': 'export default {};',
-	'package.json': packageJson
+	[ConfigManager.params.prettierConfigFileName]: ConfigManager.prettierConfigTemplate,
+	[ConfigManager.params.gitIgnoreFileName]: ConfigManager.gitIgnore,
+	[ConfigManager.params.prettierIgoreFileName]: ConfigManager.prettierIgnore,
+	[ConfigManager.params.projectTsConfigFileName]: ConfigManager.tsConfigSrcLibrary,
+	[ConfigManager.params.nonProjectTsConfigFileName]: ConfigManager.tsConfigOthers,
+	[ConfigManager.params.tsConfigFileName]: ConfigManager.tsConfig,
+	[ConfigManager.params.eslintTsConfigFileName]: ConfigManager.tsConfigCheck,
+	[ConfigManager.params.eslintConfigFileName]: ConfigManager.eslintConfigLibraryTemplate,
+	[ConfigManager.params.viteConfigFileName]: 'export default {};',
+	[ConfigManager.params.packageJsonFileName]: packageJson
 };

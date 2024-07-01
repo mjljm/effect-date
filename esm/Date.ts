@@ -1,9 +1,9 @@
-import { JsPatches } from "#mjljm/js-lib";
-import * as Errors from "#src/Errors";
-import { MBadArgumentError, MFunction } from "@mjljm/effect-lib";
-import { Array, Either, Function, Number, Option, Struct, pipe } from "effect";
+import { JsPatches } from '#parischap/js-lib';
+import * as Errors from '#project/Errors';
+import { MBadArgumentError, MFunction } from '@parischap/effect-lib';
+import { Array, Either, Function, Number, Option, Struct, pipe } from 'effect';
 
-const moduleTag = "@mjljm/effect-date/Date/";
+const moduleTag = '@parischap/effect-date/Date/';
 
 interface MonthDescriptor {
 	readonly nbDaysInMonth: number;
@@ -44,7 +44,7 @@ const normalYearMonths: Months = [
 	{ nbDaysInMonth: 30, monthStartMs: 20995200000 },
 	{ nbDaysInMonth: 31, monthStartMs: 23587200000 },
 	{ nbDaysInMonth: 30, monthStartMs: 26265600000 },
-	{ nbDaysInMonth: 31, monthStartMs: 28857600000 },
+	{ nbDaysInMonth: 31, monthStartMs: 28857600000 }
 ];
 const leapYearMonths = [
 	{ nbDaysInMonth: 31, monthStartMs: 0 },
@@ -58,7 +58,7 @@ const leapYearMonths = [
 	{ nbDaysInMonth: 30, monthStartMs: 21081600000 },
 	{ nbDaysInMonth: 31, monthStartMs: 23673600000 },
 	{ nbDaysInMonth: 30, monthStartMs: 26352000000 },
-	{ nbDaysInMonth: 31, monthStartMs: 28944000000 },
+	{ nbDaysInMonth: 31, monthStartMs: 28944000000 }
 ];
 
 /**
@@ -140,8 +140,7 @@ export interface Type {
 /**
  * returns the number of days in a year
  */
-const getNbDaysInYear = (isLeapYear: boolean): number =>
-	isLeapYear ? 366 : 365;
+const getNbDaysInYear = (isLeapYear: boolean): number => (isLeapYear ? 366 : 365);
 
 /**
  * Calculates the UTC week day of a timestamp. Calculation is based on the fact that 4/1/1970 was a UTC sunday.
@@ -155,26 +154,19 @@ const getWeekDayFromTimestamp = (timestamp: number): number => {
  * Offset in ms between the 1st day of the year at 00:00:00:000 and the first day of the first iso week of the year at 00:00:00:000. No input parameters check!
  */
 const unsafeGetFirstIsoWeekMs = (firstDayOfYearWeekDay: number): number =>
-	(firstDayOfYearWeekDay <= 4
-		? 1 - firstDayOfYearWeekDay
-		: 8 - firstDayOfYearWeekDay) * DAY_MS;
+	(firstDayOfYearWeekDay <= 4 ? 1 - firstDayOfYearWeekDay : 8 - firstDayOfYearWeekDay) * DAY_MS;
 
 /**
  * Determines if an iso year is long (53 weeks) or short (52 weeks). No input parameters check!
  */
-const unsafeIsLongIsoYear = (
-	firstDayOfYearWeekDay: number,
-	isLeapYear: boolean,
-): boolean =>
+const unsafeIsLongIsoYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): boolean =>
 	firstDayOfYearWeekDay === 4 || (firstDayOfYearWeekDay === 3 && isLeapYear);
 
 /**
  * Calculates the number of iso weeks in a year. No input parameters check!
  */
-const unsafeGetNbIsoWeeksInYear = (
-	firstDayOfYearWeekDay: number,
-	isLeapYear: boolean,
-): number => (unsafeIsLongIsoYear(firstDayOfYearWeekDay, isLeapYear) ? 53 : 52);
+const unsafeGetNbIsoWeeksInYear = (firstDayOfYearWeekDay: number, isLeapYear: boolean): number =>
+	unsafeIsLongIsoYear(firstDayOfYearWeekDay, isLeapYear) ? 53 : 52;
 
 /**
  * Calculates yearData from a year. No input parameters check
@@ -203,26 +195,24 @@ const unsafeCalcYearData = (year: number): YearData => {
 	return {
 		year,
 		isLeapYear,
-		yearStartMs,
+		yearStartMs
 	};
 };
 
 /**
  * Calculates yearData from a year
  */
-const calcYearData = (
-	year: number,
-): Either.Either<YearData, MBadArgumentError.OutOfRange> =>
+const calcYearData = (year: number): Either.Either<YearData, MBadArgumentError.OutOfRange> =>
 	pipe(
 		year,
 		MBadArgumentError.OutOfRange.check({
 			min: MIN_FULL_YEAR,
 			max: MAX_FULL_YEAR,
-			id: "year",
+			id: 'year',
 			moduleTag,
-			functionName: "setYear",
+			functionName: 'setYear'
 		}),
-		Either.map(unsafeCalcYearData),
+		Either.map(unsafeCalcYearData)
 	);
 
 /**
@@ -230,7 +220,7 @@ const calcYearData = (
  * @category utils
  */
 export const localTimeZoneOffset: () => number = MFunction.once(
-	() => new Date(0).getTimezoneOffset() / 60,
+	() => new Date(0).getTimezoneOffset() / 60
 );
 
 /**
@@ -253,7 +243,7 @@ export const empty = (): Type => ({
 	hourMs: Option.none(),
 	minuteMs: Option.none(),
 	secondMs: Option.none(),
-	timeZoneOffsetMs: Option.none(),
+	timeZoneOffsetMs: Option.none()
 });
 
 /**
@@ -268,7 +258,7 @@ export const unsafeMake = (
 	minute = 0,
 	second = 0,
 	millisecond = 0,
-	timeZoneOffset = localTimeZoneOffset(),
+	timeZoneOffset = localTimeZoneOffset()
 ): Type =>
 	pipe(
 		empty(),
@@ -277,7 +267,7 @@ export const unsafeMake = (
 		unsafeSetMinute(minute),
 		unsafeSetSecond(second),
 		unsafeSetMillisecond(millisecond),
-		setTimeZoneOffset(timeZoneOffset),
+		setTimeZoneOffset(timeZoneOffset)
 	);
 
 /**
@@ -292,7 +282,7 @@ export const make = (
 	minute = 0,
 	second = 0,
 	millisecond = 0,
-	timeZoneOffset = localTimeZoneOffset(),
+	timeZoneOffset = localTimeZoneOffset()
 ): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 	pipe(
 		empty(),
@@ -301,17 +291,14 @@ export const make = (
 		Either.flatMap(setMinute(minute)),
 		Either.flatMap(setSecond(second)),
 		Either.flatMap(setMillisecond(millisecond)),
-		Either.map(setTimeZoneOffset(timeZoneOffset)),
+		Either.map(setTimeZoneOffset(timeZoneOffset))
 	);
 
 /**
  * Creates a Date from a timestamp. No input parameters check
  * @category constructors
  */
-export const unsafeMakeFromTimestamp = (
-	timestamp: number,
-	timeZoneOffset: number,
-): Type => {
+export const unsafeMakeFromTimestamp = (timestamp: number, timeZoneOffset: number): Type => {
 	const timeZoneOffsetMs = -timeZoneOffset * HOUR_MS;
 	// 2001 is the start of a 400-year period whose last year is bissextile
 	const offset2001 = timestamp - YEAR_START_2001_MS - timeZoneOffsetMs;
@@ -335,11 +322,7 @@ export const unsafeMakeFromTimestamp = (
 	const year = 2001 + 400 * q400Years + 100 * q100Years + 4 * q4Years + q1Year;
 	const isLeapYear = q1Year === 3 && (q4Years !== 24 || q100Years === 3);
 	const yearStartMs =
-		YEAR_START_2001_MS +
-		offset100Years +
-		offset4Years +
-		offset1Year +
-		offset400Years;
+		YEAR_START_2001_MS + offset100Years + offset4Years + offset1Year + offset400Years;
 
 	const ordinalDay0 = Math.floor(r1Year / DAY_MS);
 	const offsetOrdinalDay = ordinalDay0 * DAY_MS;
@@ -364,7 +347,7 @@ export const unsafeMakeFromTimestamp = (
 		yearData: Option.some({
 			year,
 			isLeapYear,
-			yearStartMs: yearStartMs,
+			yearStartMs: yearStartMs
 		}),
 		ordinalDay: Option.some(ordinalDay0 + 1),
 		hour24: Option.some(hour24),
@@ -376,7 +359,7 @@ export const unsafeMakeFromTimestamp = (
 		hourMs: Option.some(hourMs),
 		minuteMs: Option.some(minuteMs),
 		secondMs: Option.some(secondMs),
-		timeZoneOffsetMs: Option.some(timeZoneOffsetMs),
+		timeZoneOffsetMs: Option.some(timeZoneOffsetMs)
 	};
 };
 
@@ -386,7 +369,7 @@ export const unsafeMakeFromTimestamp = (
  */
 export const makeFromTimestamp = (
 	timestamp: number,
-	timeZoneOffset: number,
+	timeZoneOffset: number
 ): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 	Either.gen(function* () {
 		const checkedTimestamp = yield* pipe(
@@ -394,20 +377,20 @@ export const makeFromTimestamp = (
 			MBadArgumentError.OutOfRange.check({
 				min: MIN_TIMESTAMP,
 				max: MAX_TIMESTAMP,
-				id: "timestamp",
+				id: 'timestamp',
 				moduleTag,
-				functionName: "makeFromTimestamp",
-			}),
+				functionName: 'makeFromTimestamp'
+			})
 		);
 		const checkedTimeZoneOffset = yield* pipe(
 			timeZoneOffset,
 			MBadArgumentError.OutOfRange.check({
 				min: -12,
 				max: 14,
-				id: "timeZoneOffset",
+				id: 'timeZoneOffset',
 				moduleTag,
-				functionName: "makeFromTimestamp",
-			}),
+				functionName: 'makeFromTimestamp'
+			})
 		);
 		return unsafeMakeFromTimestamp(checkedTimestamp, checkedTimeZoneOffset);
 	});
@@ -427,7 +410,7 @@ export const unsafeSetYearAndOrdinalDay =
 			ordinalDay: Option.some(ordinalDay),
 			monthAndMonthDayData: Option.none(),
 			isoWeekAndWeekDayData: Option.none(),
-			dayMs: Option.some(yearData.yearStartMs + (ordinalDay - 1) * DAY_MS),
+			dayMs: Option.some(yearData.yearStartMs + (ordinalDay - 1) * DAY_MS)
 		};
 	};
 
@@ -445,10 +428,10 @@ export const setYearAndOrdinalDay =
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
 					max: getNbDaysInYear(checkedYearData.isLeapYear),
-					id: "ordinalDay",
+					id: 'ordinalDay',
 					moduleTag,
-					functionName: "setYearAndOrdinalDay",
-				}),
+					functionName: 'setYearAndOrdinalDay'
+				})
 			);
 			return {
 				...self,
@@ -457,9 +440,7 @@ export const setYearAndOrdinalDay =
 				ordinalDay: Option.some(checkedOrdinalDay),
 				monthAndMonthDayData: Option.none(),
 				isoWeekAndWeekDayData: Option.none(),
-				dayMs: Option.some(
-					checkedYearData.yearStartMs + (checkedOrdinalDay - 1) * DAY_MS,
-				),
+				dayMs: Option.some(checkedYearData.yearStartMs + (checkedOrdinalDay - 1) * DAY_MS)
 			};
 		});
 
@@ -471,9 +452,9 @@ export const unsafeSetYearMonthAndMonthDay =
 	(year: number, month: number, monthDay: number) =>
 	(self: Type): Type => {
 		const yearData = unsafeCalcYearData(year);
-		const monthDescriptor = (
-			yearData.isLeapYear ? leapYearMonths : normalYearMonths
-		)[month - 1] as MonthDescriptor;
+		const monthDescriptor = (yearData.isLeapYear ? leapYearMonths : normalYearMonths)[
+			month - 1
+		] as MonthDescriptor;
 		return {
 			...self,
 			timestamp: Option.none(),
@@ -481,14 +462,12 @@ export const unsafeSetYearMonthAndMonthDay =
 			ordinalDay: Option.none(),
 			monthAndMonthDayData: Option.some({
 				month,
-				monthDay,
+				monthDay
 			}),
 			isoWeekAndWeekDayData: Option.none(),
 			dayMs: Option.some(
-				yearData.yearStartMs +
-					monthDescriptor.monthStartMs +
-					(monthDay - 1) * DAY_MS,
-			),
+				yearData.yearStartMs + monthDescriptor.monthStartMs + (monthDay - 1) * DAY_MS
+			)
 		};
 	};
 
@@ -506,23 +485,24 @@ export const setYearMonthAndMonthDay =
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
 					max: 12,
-					id: "month",
+					id: 'month',
 					moduleTag,
-					functionName: "setYearMonthAndMonthDay",
-				}),
+					functionName: 'setYearMonthAndMonthDay'
+				})
 			);
 			const checkedMonthDescriptor = (
-				checkedYearData.isLeapYear ? leapYearMonths : normalYearMonths
-			)[checkedMonth - 1] as MonthDescriptor;
+				checkedYearData.isLeapYear ? leapYearMonths : normalYearMonths)[
+				checkedMonth - 1
+			] as MonthDescriptor;
 			const checkedMonthDay = yield* pipe(
 				monthDay,
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
 					max: checkedMonthDescriptor.nbDaysInMonth,
-					id: "monthDay",
+					id: 'monthDay',
 					moduleTag,
-					functionName: "setYearMonthAndMonthDay",
-				}),
+					functionName: 'setYearMonthAndMonthDay'
+				})
 			);
 			return {
 				...self,
@@ -531,14 +511,14 @@ export const setYearMonthAndMonthDay =
 				ordinalDay: Option.none(),
 				monthAndMonthDayData: Option.some({
 					month: checkedMonth,
-					monthDay: checkedMonthDay,
+					monthDay: checkedMonthDay
 				}),
 				isoWeekAndWeekDayData: Option.none(),
 				dayMs: Option.some(
 					checkedYearData.yearStartMs +
 						checkedMonthDescriptor.monthStartMs +
-						(checkedMonthDay - 1) * DAY_MS,
-				),
+						(checkedMonthDay - 1) * DAY_MS
+				)
 			};
 		});
 
@@ -560,12 +540,10 @@ export const unsafeSetYearIsoWeekAndWeekDay =
 			isoWeekAndWeekDayData: Option.some({ isoWeek, weekDay }),
 			dayMs: Option.some(
 				yearData.yearStartMs +
-					unsafeGetFirstIsoWeekMs(
-						getWeekDayFromTimestamp(yearData.yearStartMs),
-					) +
+					unsafeGetFirstIsoWeekMs(getWeekDayFromTimestamp(yearData.yearStartMs)) +
 					(isoWeek - 1) * WEEK_MS +
-					(weekDay - 1) * DAY_MS,
-			),
+					(weekDay - 1) * DAY_MS
+			)
 		};
 	};
 
@@ -578,31 +556,26 @@ export const setYearIsoWeekAndWeekDay =
 	(self: Type): Either.Either<Type, MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
 			const checkedYearData = yield* pipe(calcYearData(year));
-			const firstDayOfYearWeekDay = getWeekDayFromTimestamp(
-				checkedYearData.yearStartMs,
-			);
+			const firstDayOfYearWeekDay = getWeekDayFromTimestamp(checkedYearData.yearStartMs);
 			const checkedIsoWeek = yield* pipe(
 				isoWeek,
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
-					max: unsafeGetNbIsoWeeksInYear(
-						firstDayOfYearWeekDay,
-						checkedYearData.isLeapYear,
-					),
-					id: "isoWeek",
+					max: unsafeGetNbIsoWeeksInYear(firstDayOfYearWeekDay, checkedYearData.isLeapYear),
+					id: 'isoWeek',
 					moduleTag,
-					functionName: "setYearIsoWeekAndWeekDay",
-				}),
+					functionName: 'setYearIsoWeekAndWeekDay'
+				})
 			);
 			const checkedWeekDay = yield* pipe(
 				weekDay,
 				MBadArgumentError.OutOfRange.check({
 					min: 1,
 					max: 7,
-					id: "weekDay",
+					id: 'weekDay',
 					moduleTag,
-					functionName: "setYearIsoWeekAndWeekDay",
-				}),
+					functionName: 'setYearIsoWeekAndWeekDay'
+				})
 			);
 			return {
 				...self,
@@ -612,14 +585,14 @@ export const setYearIsoWeekAndWeekDay =
 				monthAndMonthDayData: Option.none(),
 				isoWeekAndWeekDayData: Option.some({
 					isoWeek: checkedIsoWeek,
-					weekDay: checkedWeekDay,
+					weekDay: checkedWeekDay
 				}),
 				dayMs: Option.some(
 					checkedYearData.yearStartMs +
 						unsafeGetFirstIsoWeekMs(firstDayOfYearWeekDay) +
 						(checkedIsoWeek - 1) * WEEK_MS +
-						(checkedWeekDay - 1) * DAY_MS,
-				),
+						(checkedWeekDay - 1) * DAY_MS
+				)
 			};
 		});
 
@@ -634,7 +607,7 @@ export const unsafeSetHour24 =
 		timestamp: Option.none(),
 		hour24: Option.some(hour24),
 		hour12AndMeridiem: Option.none(),
-		hourMs: Option.some(hour24 * HOUR_MS),
+		hourMs: Option.some(hour24 * HOUR_MS)
 	});
 
 /**
@@ -649,11 +622,11 @@ export const setHour24 =
 			MBadArgumentError.OutOfRange.check({
 				min: 0,
 				max: 23,
-				id: "hour24",
+				id: 'hour24',
 				moduleTag,
-				functionName: "setHour24",
+				functionName: 'setHour24'
 			}),
-			Either.map(Function.flip(unsafeSetHour24)(self)),
+			Either.map(Function.flip(unsafeSetHour24)(self))
 		);
 
 /**
@@ -667,7 +640,7 @@ export const unsafeSetHour12AndMeridiem =
 		timestamp: Option.none(),
 		hour24: Option.some(hour12 + meridiem),
 		hour12AndMeridiem: Option.some({ hour12, meridiem }),
-		hourMs: Option.some((hour12 + meridiem) * HOUR_MS),
+		hourMs: Option.some((hour12 + meridiem) * HOUR_MS)
 	});
 
 /**
@@ -682,13 +655,11 @@ export const setHour12AndMeridiem =
 			MBadArgumentError.OutOfRange.check({
 				min: 0,
 				max: 11,
-				id: "hour12",
+				id: 'hour12',
 				moduleTag,
-				functionName: "setHour12AndMeridiem",
+				functionName: 'setHour12AndMeridiem'
 			}),
-			Either.map((checkedHour12) =>
-				pipe(self, unsafeSetHour12AndMeridiem(checkedHour12, meridiem)),
-			),
+			Either.map((checkedHour12) => pipe(self, unsafeSetHour12AndMeridiem(checkedHour12, meridiem)))
 		);
 
 /**
@@ -701,7 +672,7 @@ export const unsafeSetMinute =
 		...self,
 		timestamp: Option.none(),
 		minute: Option.some(minute),
-		minuteMs: Option.some(minute * MINUTE_MS),
+		minuteMs: Option.some(minute * MINUTE_MS)
 	});
 
 /**
@@ -716,11 +687,11 @@ export const setMinute =
 			MBadArgumentError.OutOfRange.check({
 				min: 0,
 				max: 59,
-				id: "minute",
+				id: 'minute',
 				moduleTag,
-				functionName: "setMinute",
+				functionName: 'setMinute'
 			}),
-			Either.map(Function.flip(unsafeSetMinute)(self)),
+			Either.map(Function.flip(unsafeSetMinute)(self))
 		);
 
 /**
@@ -733,7 +704,7 @@ export const unsafeSetSecond =
 		...self,
 		timestamp: Option.none(),
 		second: Option.some(second),
-		secondMs: Option.some(second * SECOND_MS),
+		secondMs: Option.some(second * SECOND_MS)
 	});
 
 /**
@@ -748,11 +719,11 @@ export const setSecond =
 			MBadArgumentError.OutOfRange.check({
 				min: 0,
 				max: 59,
-				id: "second",
+				id: 'second',
 				moduleTag,
-				functionName: "setSecond",
+				functionName: 'setSecond'
 			}),
-			Either.map(Function.flip(unsafeSetSecond)(self)),
+			Either.map(Function.flip(unsafeSetSecond)(self))
 		);
 
 /**
@@ -764,7 +735,7 @@ export const unsafeSetMillisecond =
 	(self: Type): Type => ({
 		...self,
 		timestamp: Option.none(),
-		millisecond: Option.some(millisecond),
+		millisecond: Option.some(millisecond)
 	});
 
 /**
@@ -779,11 +750,11 @@ export const setMillisecond =
 			MBadArgumentError.OutOfRange.check({
 				min: 0,
 				max: 999,
-				id: "millisecond",
+				id: 'millisecond',
 				moduleTag,
-				functionName: "setMillisecond",
+				functionName: 'setMillisecond'
 			}),
-			Either.map(Function.flip(unsafeSetMillisecond)(self)),
+			Either.map(Function.flip(unsafeSetMillisecond)(self))
 		);
 
 /**
@@ -796,7 +767,7 @@ export const setTimeZoneOffset =
 		...self,
 		timestamp: Option.none(),
 		timeZoneOffset: Option.some(timeZoneOffset),
-		timeZoneOffsetMs: Option.some(-timeZoneOffset * HOUR_MS),
+		timeZoneOffsetMs: Option.some(-timeZoneOffset * HOUR_MS)
 	});
 
 /**
@@ -809,50 +780,50 @@ export const setUnsetToZero = (self: Type): Type => {
 		hour24: pipe(
 			self.hourMs,
 			Option.flatMap(() => self.hour24),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		hour12AndMeridiem: pipe(
 			self.hourMs,
 			Option.flatMap(() => self.hour12AndMeridiem),
-			Option.orElse(() => Option.some({ hour12: 0, meridiem: 0 as const })),
+			Option.orElse(() => Option.some({ hour12: 0, meridiem: 0 as const }))
 		),
 		minute: pipe(
 			self.minuteMs,
 			Option.flatMap(() => self.minute),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		second: pipe(
 			self.secondMs,
 			Option.flatMap(() => self.second),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		millisecond: Option.orElse(self.millisecond, () => Option.some(0)),
 		timeZoneOffset: pipe(
 			self.timeZoneOffsetMs,
 			Option.flatMap(() => self.timeZoneOffset),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		dayMs: Option.none(),
 		hourMs: pipe(
 			self.hourMs,
 			Option.flatMap(() => self.hourMs),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		minuteMs: pipe(
 			self.minuteMs,
 			Option.flatMap(() => self.minuteMs),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		secondMs: pipe(
 			self.secondMs,
 			Option.flatMap(() => self.secondMs),
-			Option.orElse(() => Option.some(0)),
+			Option.orElse(() => Option.some(0))
 		),
 		timeZoneOffsetMs: pipe(
 			self.timeZoneOffsetMs,
 			Option.flatMap(() => self.timeZoneOffsetMs),
-			Option.orElse(() => Option.some(0)),
-		),
+			Option.orElse(() => Option.some(0))
+		)
 	};
 };
 
@@ -860,9 +831,7 @@ export const setUnsetToZero = (self: Type): Type => {
  * Returns the timestamp of the Date if enough enformation was provided to calculate it
  * @category getters
  */
-export const getTimeStamp = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getTimeStamp = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.timestamp,
 		Option.orElse(() =>
@@ -873,40 +842,36 @@ export const getTimeStamp = (
 					self.minuteMs,
 					self.secondMs,
 					self.millisecond,
-					self.timeZoneOffsetMs,
+					self.timeZoneOffsetMs
 				),
 				Option.all,
-				Option.map(Number.sumAll),
-			),
+				Option.map(Number.sumAll)
+			)
 		),
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the year of the Date if enough enformation was provided to calculate it
  * @category getters
  */
-export const getYear = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getYear = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.yearData,
-		Option.map(Struct.get("year")),
-		Either.fromOption(() => new Errors.MissingData()),
+		Option.map(Struct.get('year')),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the ordinalDay of the Date if enough enformation was provided to calculate it
  * @category getters
  */
-export const getOrdinalDay = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getOrdinalDay = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.ordinalDay,
 		// ordinalDay may have been unset by setYearMonthAndMonthDay, unsafeSetYearMonthAndMonthDay, setYearIsoWeekAndWeekDay, unsafeSetYearIsoWeekAndWeekDay
 		Option.orElse(() => Option.map(self.dayMs, Number.unsafeDivide(DAY_MS))),
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
@@ -914,7 +879,7 @@ export const getOrdinalDay = (
  * @category getters
  */
 export const getMonthAndMonthDay = (
-	self: Type,
+	self: Type
 ): Either.Either<MonthAndMonthDayData, Errors.MissingData> =>
 	pipe(
 		self.monthAndMonthDayData,
@@ -939,38 +904,34 @@ export const getMonthAndMonthDay = (
 					// @ts-expect-error monthStartMs cannot be undefined
 					return {
 						month: month0 + 1,
-						monthDay: Math.floor((offset - monthStartMs) / DAY_MS) + 1,
+						monthDay: Math.floor((offset - monthStartMs) / DAY_MS) + 1
 					};
-				}),
-			),
+				})
+			)
 		),
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the month of the Date if enough enformation was provided to calculate it. If you are also interested in the monthDay, use getMonthAndMonthDay instead.
  * @category getters
  */
-export const getMonth = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
-	pipe(self, getMonthAndMonthDay, Either.map(Struct.get("month")));
+export const getMonth = (self: Type): Either.Either<number, Errors.MissingData> =>
+	pipe(self, getMonthAndMonthDay, Either.map(Struct.get('month')));
 
 /**
  * Returns the monthDay of the Date if enough enformation was provided to calculate it. If you are also interested in the month, use getMonthAndMonthDay instead.
  * @category getters
  */
-export const getMonthDay = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
-	pipe(self, getMonthAndMonthDay, Either.map(Struct.get("monthDay")));
+export const getMonthDay = (self: Type): Either.Either<number, Errors.MissingData> =>
+	pipe(self, getMonthAndMonthDay, Either.map(Struct.get('monthDay')));
 
 /**
  * Returns the isoWeek and weekDay of the Date if enough enformation was provided to calculate them. If you are only interested in the isoWeek or the weekDay, use getIsoWeek or getWeekDay instead.
  * @category getters
  */
 export const getIsoWeekAndWeekDay = (
-	self: Type,
+	self: Type
 ): Either.Either<IsoWeekAndWeekDayData, Errors.MissingData> =>
 	pipe(
 		self.isoWeekAndWeekDayData,
@@ -979,48 +940,40 @@ export const getIsoWeekAndWeekDay = (
 				Option.product(self.dayMs, self.yearData),
 				Option.map(([dayMs, { yearStartMs }]) => {
 					const offset =
-						dayMs -
-						yearStartMs -
-						unsafeGetFirstIsoWeekMs(getWeekDayFromTimestamp(yearStartMs));
+						dayMs - yearStartMs - unsafeGetFirstIsoWeekMs(getWeekDayFromTimestamp(yearStartMs));
 					const isoWeek0 = Math.floor(offset / WEEK_MS);
 					return {
 						isoWeek: isoWeek0 + 1,
-						weekDay: Math.floor((offset - isoWeek0 * WEEK_MS) / DAY_MS) + 1,
+						weekDay: Math.floor((offset - isoWeek0 * WEEK_MS) / DAY_MS) + 1
 					};
-				}),
-			),
+				})
+			)
 		),
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the isoWeek of the Date if enough enformation was provided to calculate it. If you are also interested in the weekDay, use getIsoWeekAndWeekDay instead.
  * @category getters
  */
-export const getIsoWeek = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
-	pipe(self, getIsoWeekAndWeekDay, Either.map(Struct.get("isoWeek")));
+export const getIsoWeek = (self: Type): Either.Either<number, Errors.MissingData> =>
+	pipe(self, getIsoWeekAndWeekDay, Either.map(Struct.get('isoWeek')));
 
 /**
  * Returns the weekDay of the Date if enough enformation was provided to calculate it. If you are also interested in the isoWeek, use getIsoWeekAndWeekDay instead.
  * @category getters
  */
-export const getWeekDay = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
-	pipe(self, getIsoWeekAndWeekDay, Either.map(Struct.get("weekDay")));
+export const getWeekDay = (self: Type): Either.Either<number, Errors.MissingData> =>
+	pipe(self, getIsoWeekAndWeekDay, Either.map(Struct.get('weekDay')));
 
 /**
  * Returns the hour24 of the Date if enough enformation was provided to calculate it.
  * @category getters
  */
-export const getHour24 = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getHour24 = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.hour24,
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
@@ -1028,7 +981,7 @@ export const getHour24 = (
  * @category getters
  */
 export const getHour12AndMeridiem = (
-	self: Type,
+	self: Type
 ): Either.Either<Hour12AndMeridiem, Errors.MissingData> =>
 	pipe(
 		self.hour12AndMeridiem,
@@ -1037,75 +990,63 @@ export const getHour12AndMeridiem = (
 				const hour24 = hourMs / HOUR_MS;
 				const meridiem = hour24 >= 12 ? (12 as const) : (0 as const);
 				return { hour12: hour24 - meridiem, meridiem };
-			}),
+			})
 		),
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the hour12 of the Date if enough enformation was provided to calculate it. If you are also interested in the meridiem, use getHour12AndMeridiem instead.
  * @category getters
  */
-export const getHour12 = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
-	pipe(self, getHour12AndMeridiem, Either.map(Struct.get("hour12")));
+export const getHour12 = (self: Type): Either.Either<number, Errors.MissingData> =>
+	pipe(self, getHour12AndMeridiem, Either.map(Struct.get('hour12')));
 
 /**
  * Returns the meridiem of the Date if enough enformation was provided to calculate it. If you are also interested in the hour12, use getHour12AndMeridiem instead.
  * @category getters
  */
-export const getMeridiem = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
-	pipe(self, getHour12AndMeridiem, Either.map(Struct.get("meridiem")));
+export const getMeridiem = (self: Type): Either.Either<number, Errors.MissingData> =>
+	pipe(self, getHour12AndMeridiem, Either.map(Struct.get('meridiem')));
 
 /**
  * Returns the minute of the Date if enough enformation was provided to calculate it.
  * @category getters
  */
-export const getMinute = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getMinute = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.minute,
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the second of the Date if enough enformation was provided to calculate it.
  * @category getters
  */
-export const getSecond = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getSecond = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.second,
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the millisecond of the Date if enough enformation was provided to calculate it.
  * @category getters
  */
-export const getMillisecond = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getMillisecond = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.millisecond,
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
  * Returns the timeZoneOffset of the Date if it was provided.
  * @category getters
  */
-export const getTimeZoneOffset = (
-	self: Type,
-): Either.Either<number, Errors.MissingData> =>
+export const getTimeZoneOffset = (self: Type): Either.Either<number, Errors.MissingData> =>
 	pipe(
 		self.timeZoneOffset,
-		Either.fromOption(() => new Errors.MissingData()),
+		Either.fromOption(() => new Errors.MissingData())
 	);
 
 /**
@@ -1114,9 +1055,7 @@ export const getTimeZoneOffset = (
  */
 export const addMillisecondOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
 			const timestamp = yield* pipe(self, getTimeStamp);
 			const timeZoneOffset = yield* pipe(self, getTimeZoneOffset);
@@ -1129,9 +1068,7 @@ export const addMillisecondOffset =
  */
 export const addSecondOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		pipe(self, addMillisecondOffset(offset * SECOND_MS));
 
 /**
@@ -1140,9 +1077,7 @@ export const addSecondOffset =
  */
 export const addMinuteOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		pipe(self, addMillisecondOffset(offset * MINUTE_MS));
 
 /**
@@ -1151,9 +1086,7 @@ export const addMinuteOffset =
  */
 export const addHourOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		pipe(self, addMillisecondOffset(offset * HOUR_MS));
 
 /**
@@ -1162,9 +1095,7 @@ export const addHourOffset =
  */
 export const addDayOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		pipe(self, addMillisecondOffset(offset * DAY_MS));
 
 /**
@@ -1173,9 +1104,7 @@ export const addDayOffset =
  */
 export const addWeekOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		pipe(self, addMillisecondOffset(offset * WEEK_MS));
 
 /**
@@ -1184,25 +1113,17 @@ export const addWeekOffset =
  */
 export const addMonthOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
 			const year = yield* pipe(self, getYear);
 			const { month, monthDay } = yield* pipe(self, getMonthAndMonthDay);
 			const targetMonth0 = month - 1 + offset;
 			const yearOffset =
-				targetMonth0 < 0
-					? Math.floor((targetMonth0 + 1) / 12) - 1
-					: Math.floor(targetMonth0 / 12);
+				targetMonth0 < 0 ? Math.floor((targetMonth0 + 1) / 12) - 1 : Math.floor(targetMonth0 / 12);
 			const monthOffset = targetMonth0 - yearOffset * 12;
 			return yield* pipe(
 				self,
-				setYearMonthAndMonthDay(
-					year + yearOffset,
-					month + monthOffset,
-					monthDay,
-				),
+				setYearMonthAndMonthDay(year + yearOffset, month + monthOffset, monthDay)
 			);
 		});
 
@@ -1212,14 +1133,9 @@ export const addMonthOffset =
  */
 export const addYearOffset =
 	(offset: number) =>
-	(
-		self: Type,
-	): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
+	(self: Type): Either.Either<Type, Errors.MissingData | MBadArgumentError.OutOfRange> =>
 		Either.gen(function* () {
 			const year = yield* pipe(self, getYear);
 			const { month, monthDay } = yield* pipe(self, getMonthAndMonthDay);
-			return yield* pipe(
-				self,
-				setYearMonthAndMonthDay(year + offset, month, monthDay),
-			);
+			return yield* pipe(self, setYearMonthAndMonthDay(year + offset, month, monthDay));
 		});

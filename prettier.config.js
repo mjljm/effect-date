@@ -1,3 +1,3 @@
-import * as ConfigManager from '@mjljm/configs-manager';
+import * as ConfigManager from "@parischap/configs-manager";
 
-export default ConfigManager.PrettierConfigBase;
+export default ConfigManager.prettierConfigBase;

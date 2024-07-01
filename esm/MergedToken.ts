@@ -1,5 +1,5 @@
-import { MFunction } from "#mjljm/effect-lib";
-import { HashMap, Record, pipe } from "effect";
+import { MFunction } from '#parischap/effect-lib';
+import { HashMap, Record, pipe } from 'effect';
 
 /*export interface DateToMergedToken {
 	(date: Date.Components): number;
@@ -14,30 +14,30 @@ const Descriptor = MFunction.make<Descriptor>;
 
 // year must be in first position
 const struct = {
-	year: Descriptor({ label: "year" }),
+	year: Descriptor({ label: 'year' }),
 	ordinalDay: Descriptor({
-		label: "year day",
-		dateToMergedToken: (date) => date.ordinalDay,
+		label: 'year day',
+		dateToMergedToken: (date) => date.ordinalDay
 	}),
-	month: Descriptor({ label: "month" }),
-	monthDay: Descriptor({ label: "day of month" }),
+	month: Descriptor({ label: 'month' }),
+	monthDay: Descriptor({ label: 'day of month' }),
 	isoWeek: Descriptor({
-		label: "week number",
+		label: 'week number'
 	}),
 	weekDay: Descriptor({
-		label: "weekday",
+		label: 'weekday'
 	}),
-	hour24: Descriptor({ label: "hour in 24-hour format" }),
+	hour24: Descriptor({ label: 'hour in 24-hour format' }),
 	hour12: Descriptor({
-		label: "hour in 12-hour format",
+		label: 'hour in 12-hour format'
 	}),
 	meridiem: Descriptor({
-		label: "meridiem",
+		label: 'meridiem'
 	}),
-	minute: Descriptor({ label: "minute" }),
-	second: Descriptor({ label: "second" }),
-	millisecond: Descriptor({ label: "millisecond" }),
-	timeZoneOffset: Descriptor({ label: "zone offset" }),
+	minute: Descriptor({ label: 'minute' }),
+	second: Descriptor({ label: 'second' }),
+	millisecond: Descriptor({ label: 'millisecond' }),
+	timeZoneOffset: Descriptor({ label: 'zone offset' })
 };
 
 export type Type = keyof typeof struct;
@@ -45,7 +45,7 @@ export type Type = keyof typeof struct;
 export const map: HashMap.HashMap<Type, Descriptor> = pipe(
 	struct,
 	Record.toEntries,
-	HashMap.fromIterable,
+	HashMap.fromIterable
 );
 
 /*export const name = (self: Type): string =>

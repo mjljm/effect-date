@@ -1,32 +1,22 @@
-import { JsRegExp } from "#mjljm/js-lib";
-import * as Basis from "#src/Basis";
-import * as Errors from "#src/Errors";
-import * as MergedToken from "#src/MergedToken";
-import * as Token from "#src/Token";
-import { MArray, MFunction, MString, MTypes } from "@mjljm/effect-lib";
+import { JsRegExp } from '#parischap/js-lib';
+import * as Basis from '#project/Basis';
+import * as Errors from '#project/Errors';
+import * as MergedToken from '#project/MergedToken';
+import * as Token from '#project/Token';
+import { MArray, MFunction, MString, MTypes } from '@parischap/effect-lib';
 
-import {
-	Array,
-	Either,
-	Number,
-	Option,
-	Record,
-	String,
-	Tuple,
-	flow,
-	pipe,
-} from "effect";
+import { Array, Either, Number, Option, Record, String, Tuple, flow, pipe } from 'effect';
 
-//const moduleTag = '@mjljm/effect-date/Date/';
-export type DefaultOption = "zeroValues" | "nowFragments" | "none";
+//const moduleTag = '@parischap/effect-date/Date/';
+export type DefaultOption = 'zeroValues' | 'nowFragments' | 'none';
 
 const defaultDate = function (defaultOption: DefaultOption) {
 	switch (defaultOption) {
-		case "none":
+		case 'none':
 			return;
-		case "nowFragments":
+		case 'nowFragments':
 			return new Date();
-		case "zeroValues":
+		case 'zeroValues':
 			return new Date(0, 0, 0, 0, 0, 0, 0);
 	}
 };
@@ -41,29 +31,24 @@ const defaultDate = function (defaultOption: DefaultOption) {
 
 export const parseDateString = (
 	format: string,
-	defaultOption: DefaultOption = "none",
+	defaultOption: DefaultOption = 'none',
 	locale?: string,
-	eol = "\n",
-	tabChar = "  ",
+	eol = '\n',
+	tabChar = '  '
 ): Either.Either<
 	Errors.InexistentLocale | Errors.FormatMismatch,
-	(
-		input: string,
-	) => Either.Either<Errors.FormatMismatch | Errors.InvalidDateString, Date>
+	(input: string) => Either.Either<Errors.FormatMismatch | Errors.InvalidDateString, Date>
 > =>
 	Either.gen(function* () {
 		const now = defaultDate(defaultOption);
 
-		const hyphen = eol + tabChar + "-";
-		const commaAndHyphen = "," + hyphen;
+		const hyphen = eol + tabChar + '-';
+		const commaAndHyphen = ',' + hyphen;
 
 		const [formatPattern, tokensInOrder] = pipe(
 			format,
 			JsRegExp.escapeRegex,
-			MString.replaceMulti(
-				Token.structWithMergedToken,
-				({ parsePattern }) => parsePattern,
-			),
+			MString.replaceMulti(Token.structWithMergedToken, ({ parsePattern }) => parsePattern)
 		);
 
 		const formatRegExp = new RegExp(formatPattern);
@@ -71,27 +56,22 @@ export const parseDateString = (
 		// Decoder that converts tokens to merged tokens
 		const tokenToMergedTokenDecoder = yield* pipe(
 			tokensInOrder,
-			Array.map(([_, { tokenToMergedToken }]) =>
-				pipe(locale, tokenToMergedToken),
-			),
-			Either.all,
+			Array.map(([_, { tokenToMergedToken }]) => pipe(locale, tokenToMergedToken)),
+			Either.all
 		);
 
 		// Prepare decoder that converts merged tokens to merged bases and checks the coherence of the value of the merged tokens that were not used to build the date
-		const mergedTokensPositions: Record.Record<MergedToken.JoinedRecordWithPositions> =
-			pipe(
-				tokensInOrder,
-				Array.map(([_, { mergedToken }], position) =>
-					Tuple.make(mergedToken, position),
-				),
-				Array.groupBy(([{ key }]) => key),
-				Record.map((arr) =>
-					pipe(arr, Array.headNonEmpty, ([mergedTokenRecord]) => ({
-						...mergedTokenRecord,
-						positions: Array.map(arr, ([_, position]) => position),
-					})),
-				),
-			);
+		const mergedTokensPositions: Record.Record<MergedToken.JoinedRecordWithPositions> = pipe(
+			tokensInOrder,
+			Array.map(([_, { mergedToken }], position) => Tuple.make(mergedToken, position)),
+			Array.groupBy(([{ key }]) => key),
+			Record.map((arr) =>
+				pipe(arr, Array.headNonEmpty, ([mergedTokenRecord]) => ({
+					...mergedTokenRecord,
+					positions: Array.map(arr, ([_, position]) => position)
+				}))
+			)
+		);
 
 		const decodersAndChecks = yield* pipe(
 			Basis.structWithMergedTokensByMergedBasis,
@@ -104,10 +84,9 @@ export const parseDateString = (
 							decoder: basisFromMergedTokens.decoder,
 							mergedTokenParamsInOrder: Array.map(
 								basisFromMergedTokens.mergedTokenParamsInOrder,
-								(mergedToken) =>
-									pipe(mergedTokensPositions, Record.get(mergedToken)),
-							),
-						},
+								(mergedToken) => pipe(mergedTokensPositions, Record.get(mergedToken))
+							)
+						}
 					})),
 					MArray.extractFirst<
 						Basis.DescriptorWithParamsAvailability,
@@ -126,35 +105,28 @@ export const parseDateString = (
 													Option.map(
 														() =>
 															new Errors.FormatMismatch({
-																message: `Provided format: '${format}' does not contain enough information to calculate a date`,
-															}),
-													),
-												),
+																message: `Provided format: '${format}' does not contain enough information to calculate a date`
+															})
+													)
+												)
 											),
-											Either.map(
-												(now) => () => Either.right(defaultValue(now)),
-											),
+											Either.map((now) => () => Either.right(defaultValue(now)))
 										),
-									onSome: ({
-										basisFromMergedTokens: {
-											decoder,
-											mergedTokenParamsInOrder,
-										},
-									}) =>
+									onSome: ({ basisFromMergedTokens: { decoder, mergedTokenParamsInOrder } }) =>
 										pipe(
 											mergedTokenParamsInOrder,
 											Array.map((o) => Array.headNonEmpty(o.value.positions)),
 											decoder,
-											Either.right,
-										),
-								}),
+											Either.right
+										)
+								})
 							);
 
 							const checks = pipe(
 								otherBases,
 								Array.map(
 									({ basisFromMergedTokens: { mergedTokenParamsInOrder } }) =>
-										mergedTokenParamsInOrder,
+										mergedTokenParamsInOrder
 								),
 								Array.flatten,
 								Array.getSomes,
@@ -162,39 +134,37 @@ export const parseDateString = (
 									({
 										descriptor: { dateToMergedToken, label: mergedTokenLabel },
 										key,
-										positions,
+										positions
 									}) =>
 										(date: Date, mergedTokenValues: ReadonlyArray<number>) =>
-											pipe(
-												mergedTokenValues,
-												MArray.unsafeGet(Array.headNonEmpty(positions)),
-											) === dateToMergedToken(date)
-												? Option.none()
-												: Option.some(
-														`merged token ${key}(${mergedTokenLabel}) at position(s) ${pipe(
-															positions,
-															Array.map((pos) =>
-																MString.fromNonNullPrimitive(pos + 1),
-															),
-															Array.join(", "),
-														)} has an incoherent value`,
-													),
-								),
+											(
+												pipe(mergedTokenValues, MArray.unsafeGet(Array.headNonEmpty(positions))) ===
+												dateToMergedToken(date)
+											) ?
+												Option.none()
+											:	Option.some(
+													`merged token ${key}(${mergedTokenLabel}) at position(s) ${pipe(
+														positions,
+														Array.map((pos) => MString.fromNonNullPrimitive(pos + 1)),
+														Array.join(', ')
+													)} has an incoherent value`
+												)
+								)
 							);
 							return Tuple.make(mergedTokenToBasisDecoder, checks);
-						}),
-				),
+						})
+				)
 			),
-			Either.all,
+			Either.all
 		);
 
 		const mergedTokensToMergedBasesDecoders = pipe(
 			decodersAndChecks,
-			Record.map(([decoder]) => decoder),
+			Record.map(([decoder]) => decoder)
 		);
 		const mergedTokensChecks = pipe(
 			decodersAndChecks,
-			Record.map(([_, checks]) => checks),
+			Record.map(([_, checks]) => checks)
 		);
 
 		return (input: string) =>
@@ -206,9 +176,9 @@ export const parseDateString = (
 						Either.fromOption(
 							() =>
 								new Errors.FormatMismatch({
-									message: `Input '${self}' does not match the provided format: '${format}'`,
-								}),
-						),
+									message: `Input '${self}' does not match the provided format: '${format}'`
+								})
+						)
 					);
 
 					// Convert the token values to merged token values and check that multiple items of the same merge token all received the same value
@@ -225,48 +195,44 @@ export const parseDateString = (
 									Record.map(({ descriptor: { label }, key, positions }) =>
 										pipe(
 											positions,
-											Array.map((position) =>
-												pipe(mergedTokenValues, MArray.unsafeGet(position)),
-											),
+											Array.map((position) => pipe(mergedTokenValues, MArray.unsafeGet(position))),
 											Array.dedupe,
 											(valueArray) =>
-												valueArray.length === 1
-													? Option.none()
-													: Option.some(
-															`merged token ${key}(${label}) at position(s) ${pipe(
-																positions,
-																Array.map((pos) =>
-																	MString.fromNonNullPrimitive(pos + 1),
-																),
-																Array.join(", "),
-															)} has an incoherent value`,
-														),
-										),
+												valueArray.length === 1 ?
+													Option.none()
+												:	Option.some(
+														`merged token ${key}(${label}) at position(s) ${pipe(
+															positions,
+															Array.map((pos) => MString.fromNonNullPrimitive(pos + 1)),
+															Array.join(', ')
+														)} has an incoherent value`
+													)
+										)
 									),
 									Record.values,
-									Array.getSomes,
+									Array.getSomes
 								);
-								return MTypes.isEmptyArray(incoherences)
-									? mergedTokenValues
-									: yield* pipe(
+								return MTypes.isEmptyArray(incoherences) ? mergedTokenValues : (
+										yield* pipe(
 											Either.left(
 												new Errors.InvalidDateString({
 													message:
-														"Following incoherences were found: " +
+														'Following incoherences were found: ' +
 														hyphen +
-														Array.join(incoherences, commaAndHyphen),
-												}),
-											),
-										);
-							}),
-						),
+														Array.join(incoherences, commaAndHyphen)
+												})
+											)
+										)
+									);
+							})
+						)
 					);
 
 					// Convert  the merged token values to merged bases values
 					const bases = yield* pipe(
 						mergedTokensToMergedBasesDecoders,
 						Record.map((decoder) => decoder(mergedTokenValues)),
-						Either.all,
+						Either.all
 					);
 
 					// Calculate the final date
@@ -275,7 +241,7 @@ export const parseDateString = (
 					// Check that the merged tokens that could not be used to calculate the date are coherent with those that were used
 					return yield* pipe(
 						result,
-						Number.sum(pipe(bases, MReadonlyRecord.unsafeGet("Z"))),
+						Number.sum(pipe(bases, MReadonlyRecord.unsafeGet('Z'))),
 						(dateToCheckMs) => {
 							// Input date elements are provided in zone Z. The check functions return elements in UTC. For the check functions to return coherent results, we need to apply the zone offset a second time
 							const dateToCheck = new Date(dateToCheckMs);
@@ -285,24 +251,24 @@ export const parseDateString = (
 									pipe(
 										arr,
 										Array.map((check) => check(dateToCheck, mergedTokenValues)),
-										Array.getSomes,
-									),
+										Array.getSomes
+									)
 								),
 								Record.values,
-								Array.flatten,
+								Array.flatten
 							);
-							return MTypes.isEmptyArray(incoherences)
-								? Either.right(new Date(result))
-								: Either.left(
+							return MTypes.isEmptyArray(incoherences) ?
+									Either.right(new Date(result))
+								:	Either.left(
 										new Errors.InvalidDateString({
 											message:
-												"Following incoherences were found: " +
+												'Following incoherences were found: ' +
 												hyphen +
-												Array.join(incoherences, commaAndHyphen),
-										}),
+												Array.join(incoherences, commaAndHyphen)
+										})
 									);
-						},
+						}
 					);
-				}),
+				})
 			);
 	});
